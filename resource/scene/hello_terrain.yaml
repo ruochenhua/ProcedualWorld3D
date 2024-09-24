@@ -1,0 +1,19 @@
+scene:
+  - actor: directional_light
+    component:
+      - type: directional_light
+        light_color:
+          - 1
+          - 1
+          - 1
+    transform:
+      rotation:
+        - -130
+        - 75
+        - -70
+  - actor: terrain1
+    component:
+      - type: terrain
+        # height_map_path: terrain/iceland_heightmap.png
+
+
