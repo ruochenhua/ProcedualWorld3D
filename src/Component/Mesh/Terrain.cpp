@@ -91,7 +91,7 @@ void Terrain::SimpleDraw()
         glLineWidth(2.0);
     }
     
-    glDrawArrays(GL_PATCHES, 0, 4*rez*rez);
+    glDrawArrays(GL_PATCHES, 0, 4*terrain_res*terrain_res);
     if(render_wireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);    
@@ -118,6 +118,8 @@ void Terrain::Draw(const SSceneRenderInfo& scene_render_info)
     shader_data->SetFloat("power", power);
     shader_data->SetFloat("height_scale", height_scale_);
     shader_data->SetFloat("height_shift", height_shift_);
+    shader_data->SetInt("terrain_size", terrain_size);
+    shader_data->SetInt("terrain_res", terrain_res);
     SimpleDraw();
     
     glEnable(GL_CULL_FACE);
@@ -126,33 +128,33 @@ void Terrain::Draw(const SSceneRenderInfo& scene_render_info)
 void Terrain::InitRenderInfo()
 {
     // 依次读入方形四角的四个点，每四个点（方形）作为一个patch
-    for(unsigned i = 0; i < rez; i++)
+    for(unsigned i = 0; i < terrain_res; i++)
     {
-        for(unsigned j = 0; j < rez; j++)
+        for(unsigned j = 0; j < terrain_res; j++)
         {
-            height_data.push_back(-terrain_width/2.f + terrain_width*i/(float)rez);     // x
+            height_data.push_back(-terrain_size/2.f + terrain_size*i/(float)terrain_res);     // x
             height_data.push_back(0.0);                                 // y
-            height_data.push_back(-terrain_height/2.f + terrain_height*j/(float)rez);   // z
-            height_data.push_back(i/(float)rez);                        // u
-            height_data.push_back(j/(float)rez);                        // v
+            height_data.push_back(-terrain_size/2.f + terrain_size*j/(float)terrain_res);   // z
+            height_data.push_back(i/(float)terrain_res);                        // u
+            height_data.push_back(j/(float)terrain_res);                        // v
 
-            height_data.push_back(-terrain_width/2.f + terrain_width*(i+1)/(float)rez); // x
+            height_data.push_back(-terrain_size/2.f + terrain_size*(i+1)/(float)terrain_res); // x
             height_data.push_back(0.0);                                 // y
-            height_data.push_back(-terrain_height/2.f + terrain_height*j/(float)rez);   // z
-            height_data.push_back((i+1)/(float)rez);                    // u
-            height_data.push_back(j/(float)rez);                        // v
+            height_data.push_back(-terrain_size/2.f + terrain_size*j/(float)terrain_res);   // z
+            height_data.push_back((i+1)/(float)terrain_res);                    // u
+            height_data.push_back(j/(float)terrain_res);                        // v
 
-            height_data.push_back(-terrain_width/2.f + terrain_width*i/(float)rez);         // x
+            height_data.push_back(-terrain_size/2.f + terrain_size*i/(float)terrain_res);         // x
             height_data.push_back(0.0);                                     // y
-            height_data.push_back(-terrain_height/2.f + terrain_height*(j+1)/(float)rez);   // z
-            height_data.push_back(i/(float)rez);                            // u
-            height_data.push_back((j+1)/(float)rez);                        // v
+            height_data.push_back(-terrain_size/2.f + terrain_size*(j+1)/(float)terrain_res);   // z
+            height_data.push_back(i/(float)terrain_res);                            // u
+            height_data.push_back((j+1)/(float)terrain_res);                        // v
 
-            height_data.push_back(-terrain_width/2.f + terrain_width*(i+1)/(float)rez);     // x
+            height_data.push_back(-terrain_size/2.f + terrain_size*(i+1)/(float)terrain_res);     // x
             height_data.push_back(0.0);                                     // y
-            height_data.push_back(-terrain_height/2.f + terrain_height*(j+1)/(float)rez);   // z
-            height_data.push_back((i+1)/(float)rez);                        // u
-            height_data.push_back((j+1)/(float)rez);                        // v
+            height_data.push_back(-terrain_size/2.f + terrain_size*(j+1)/(float)terrain_res);   // z
+            height_data.push_back((i+1)/(float)terrain_res);                        // u
+            height_data.push_back((j+1)/(float)terrain_res);                        // v
         }
     }
 
@@ -188,7 +190,7 @@ void Terrain::InitRenderInfo()
 int Terrain::LoadHeightMap(const string& file_name)
 {
     int nrChannels;
-    unsigned char *data = stbi_load(file_name.c_str(), &terrain_width, &terrain_height, &nrChannels, 0);
+    unsigned char *data = stbi_load(file_name.c_str(), &terrain_size, &terrain_size, &nrChannels, 0);
 #if USE_TCS
     if(terrain_height_map) glDeleteTextures(1, &terrain_height_map);
     glGenTextures(1, &terrain_height_map);
@@ -198,7 +200,7 @@ int Terrain::LoadHeightMap(const string& file_name)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, terrain_width, terrain_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, terrain_size, terrain_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     
 #else

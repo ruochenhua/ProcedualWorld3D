@@ -13,6 +13,10 @@ uniform float freq;
 uniform float power;
 uniform float height_scale;
 uniform float height_shift;
+uniform vec3 cam_pos;
+
+uniform int terrain_size;
+uniform int terrain_res;
 
 // patch的四个uv数据
 in vec2 TextureCoord[];
@@ -26,6 +30,7 @@ void main(){
     float u = gl_TessCoord.x;
     float v = gl_TessCoord.y;
 
+
     vec2 t00 = TextureCoord[0];
     vec2 t01 = TextureCoord[1];
     vec2 t10 = TextureCoord[2];
@@ -36,12 +41,12 @@ void main(){
     vec2 t0 = (t01 - t00) * u + t00;
     vec2 t1 = (t11 - t10) * u + t10;
     vec2 texCoord = (t1 - t0) * v + t0;
-
+    
     // 获取patch的四个顶点
     vec3 p00 = gl_in[0].gl_Position.xyz;
     vec3 p01 = gl_in[1].gl_Position.xyz;
     vec3 p10 = gl_in[2].gl_Position.xyz;
-    vec3 p11 = gl_in[3].gl_Position.xyz;
+    vec3 p11 = gl_in[3].gl_Position.xyz ;
     vec3 p_range = p11-p00;
 
     // 得出法线
@@ -98,8 +103,11 @@ void main(){
     
     gl_Position = matrix_ubo.projection * matrix_ubo.view * vec4(p, 1.0);
 
+    vec2 cam_uv_offset = cam_pos.xz / float(terrain_size);
     //frag_texcoord = texCoord;
-    frag_texcoord = gl_TessCoord.xy;
+    frag_texcoord = p.xz / float(terrain_size) * terrain_res;
+    //frag_texcoord = gl_TessCoord.xy;
+
     frag_pos = p;
     
     frag_normal = normal;

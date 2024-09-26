@@ -101,4 +101,5 @@ void main()
 
     vec3 final_color = ApplyFog(color.xyz);
     FragColor = vec4(final_color, 1.0);
+    //FragColor = vec4(frag_texcoord, 0, 1);
 }

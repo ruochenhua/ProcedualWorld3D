@@ -128,7 +128,7 @@ void CUIManager::DescribeUIContent(double delta)
 	if(main_cam)
 	{
 		ImGui::DragFloat("cam exposure", &main_cam->exposure, 0.02f,0.01f, 10.0f);
-		ImGui::DragFloat("cam speed", &main_cam->move_speed, 0.2f,1.0f, 100.0f);
+		ImGui::DragFloat("cam speed", &main_cam->move_speed, 0.2f,1.0f, 500.0f);
 	}
 
 	ImGui::Checkbox("ssao", &render_sys->use_ssao);
