@@ -3,9 +3,6 @@
 #include "Common.h"
 #include "postprocess.h"
 #include "skybox.h"
-#include "Component/Mesh/Terrain.h"
-#include "Component/Mesh/VolumetricCloud.h"
-#include "Shader/PBRShader.h"
 #include "Shader/DeferInfoShader.h"
 #include "Shader/Shader.h"
 
@@ -126,6 +123,7 @@ namespace Kong
 		int render_sky_env_status = 2;
 		bool use_ssao = true;
 		
+		CSkyBox m_SkyBox;
 		// 场景光源信息
 		SSceneRenderInfo scene_render_info;
 	private:
@@ -145,7 +143,6 @@ namespace Kong
 		void RenderShadowMap();
 	private:
 		
-		CSkyBox m_SkyBox;
 		GLuint null_tex_id			= GL_NONE;
 		
 		shared_ptr<Shader> shadowmap_debug_shader;

@@ -179,6 +179,7 @@ bool raySphereintersection2(vec3 ro, vec3 rd, float radius, out vec3 startPos){
 
 uniform vec3 skyColorBottom;
 uniform vec3 skyColorTop;
+uniform bool render_cloud;
 
 vec3 getSun(const vec3 d, float powExp){
     float sun = clamp( dot(SUN_DIR,d), 0.0, 1.0 );
@@ -693,8 +694,12 @@ void main() {
                 1200, // Mie scale height
                 0.758                           // Mie preferred scattering direction
             );
-            vec4 cloud = computeSkyboxCloud();
-            color += cloud;
+            // do cloud render
+            if(render_cloud)
+            {
+                vec4 cloud = computeSkyboxCloud();
+                color += cloud;
+            }
         }
         FragColor = color;
     }

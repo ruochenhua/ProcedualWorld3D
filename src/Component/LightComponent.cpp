@@ -76,17 +76,7 @@ void CDirectionalLightComponent::RenderShadowMap()
         shadowmap_shader->SetMat4("model", model_mat);
 #if USE_CSM
         for(int i = 0; i < light_space_matrices.size(); ++i)
-        {
-            // if(i == 0)
-            // {
-            // mat4 light_proj = ortho(-20.f, 20.f, -20.f, 20.f, SHADOWMAP_NEAR_PLANE, SHADOWMAP_FAR_PLANE);
-            //
-            // vec3 light_pos = light_dir * -5.f;
-            // mat4 light_view = lookAt(light_pos, vec3(0,0,0), vec3(0, 1, 0));
-            // light_space_mat = light_proj * light_view;
-            //    light_space_matrices[i] = light_space_mat;
-            // }
-            
+        {            
             stringstream ss;
             ss << "light_space_matrix[" << i << "]";
             shadowmap_shader->SetMat4(ss.str(), light_space_matrices[i]);

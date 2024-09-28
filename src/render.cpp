@@ -305,7 +305,7 @@ int CRender::Init()
 
 int CRender::InitCamera()
 {
-	mainCamera = new CCamera(vec3(0.0f, 100.0f, 0.0f), vec3(1.0f, 100.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	mainCamera = new CCamera(vec3(0.0f, 30.0f, 0.0f), vec3(1.0f, 30.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	mainCamera->InitControl();
 	return 0;

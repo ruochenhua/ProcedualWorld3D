@@ -11,6 +11,8 @@
 #include "Component/LightComponent.h"
 #include <filesystem>
 
+#include "Component/Mesh/Terrain.h"
+
 using namespace Kong;
 
 CUIManager* g_uimanager = new CUIManager;
@@ -132,6 +134,7 @@ void CUIManager::DescribeUIContent(double delta)
 	}
 
 	ImGui::Checkbox("ssao", &render_sys->use_ssao);
+	ImGui::Checkbox("render cloud", &render_sys->m_SkyBox.render_cloud);
 	auto& postprocess = render_sys->post_process;
 	ImGui::Checkbox("bloom", &postprocess.bloom);
 	ImGui::DragInt("bloom_range", &postprocess.bloom_range, 1, 1, 50);

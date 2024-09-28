@@ -12,12 +12,70 @@ out vec4 FragColor;
 in mat3 TBN;
 
 uniform vec3 cam_pos;
+uniform sampler2DArray csm;
 uniform sampler2D grass_texture;
 uniform sampler2D grass_normal_texture;
 uniform sampler2D sand_texture;
 uniform sampler2D sand_normal_texture;
 uniform sampler2D rock_texture;
 uniform sampler2D rock_normal_texture;
+
+// for csm calculation
+uniform mat4 light_space_matrices[16];
+uniform float csm_distances[16];
+uniform int csm_level_count;
+
+// 计算阴影
+float ShadowCalculation_DirLight(vec4 frag_world_pos, vec3 to_light_dir)
+{
+    vec4 frag_pos_view_space = matrix_ubo.view * frag_world_pos;
+    float depthValue = abs(frag_pos_view_space.z);
+
+    int layer = -1;
+    for (int i = 0; i < csm_level_count; ++i)
+    {
+        if (depthValue < csm_distances[i])
+        {
+            layer = i;
+            break;
+        }
+    }
+    if (layer == -1)
+    {
+        layer = csm_level_count;
+    }
+
+    // 转换到-1,1的范围，再转到0,1的范围
+    vec4 frag_pos_light_space = light_space_matrices[layer] * frag_world_pos;
+    // perform perspective divide
+    vec3 proj_coord = frag_pos_light_space.xyz / frag_pos_light_space.w;
+    // transform to [0,1] range
+    proj_coord = proj_coord * 0.5 + 0.5;
+
+    // get depth of current fragment from light's perspective
+    float current_depth = proj_coord.z;
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (current_depth > 1.0)
+    {
+        return 0.0;
+    }
+
+    // PCF
+    float shadow = 0.0;
+    vec2 texel_size = 1.0 / vec2(textureSize(csm, 0));
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcf_depth = texture(csm, vec3(proj_coord.xy + vec2(x, y) * texel_size, layer)).r;
+            shadow += current_depth > pcf_depth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
 
 vec3 ApplyFog(vec3 origin_color)
 {    
@@ -89,7 +147,7 @@ void main()
         normal = rock_normal;
     }
 
-    if(light_info_ubo.has_dir_light.x > 0)
+    if(light_info_ubo.has_dir_light.x > 0.0)
     {
         vec3 light_dir = -light_info_ubo.directional_light.light_dir.xyz;
         vec4 light_color = light_info_ubo.directional_light.light_color;
@@ -97,9 +155,11 @@ void main()
         vec3 view = matrix_ubo.cam_pos.xyz - frag_pos;
         float diffuse_factor = max(0, dot(light_dir, normal));
         color = diffuse_factor * light_color * color;
+        
+        float shadow = ShadowCalculation_DirLight(vec4(frag_pos, 1.0), light_dir);
+        color *= 1.0 - shadow;
     }
 
     vec3 final_color = ApplyFog(color.xyz);
     FragColor = vec4(final_color, 1.0);
-    //FragColor = vec4(frag_texcoord, 0, 1);
 }

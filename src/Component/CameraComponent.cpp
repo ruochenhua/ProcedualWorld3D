@@ -177,14 +177,14 @@ void CCamera::MoveBackward()
 
 void CCamera::MoveLeft()
 {
-	vec3 right = cross(m_front, m_up);
+	vec3 right = normalize(cross(m_front, m_up));
 
 	m_moveVec -= right;
 }
 
 void CCamera::MoveRight()
 {
-	vec3 right = cross(m_front, m_up);
+	vec3 right = normalize(cross(m_front, m_up));
 
 	m_moveVec += right;
 }

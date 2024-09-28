@@ -14,6 +14,23 @@ scene:
   - actor: terrain1
     component:
       - type: terrain
-        # height_map_path: terrain/iceland_heightmap.png
-
-
+#        height_map_path: textures/terrain/iceland_heightmap.png
+  - actor: box2
+    transform:
+      location:
+        - 100
+        - 30
+        - 0
+      scale:
+        - 11.5
+        - 11.5
+        - 11.5
+    component:
+      - type: box
+        shader_type: brdf
+        material:
+          diffuse: textures/pbr/gold/albedo.png
+          metallic: textures/pbr/gold/metallic.png
+          normal: textures/pbr/gold/normal.png
+          roughness: textures/pbr/gold/roughness.png
+          ao: textures/pbr/gold/ao.png
